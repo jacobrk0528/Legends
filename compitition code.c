@@ -41,6 +41,11 @@ const short rightButton = 4;
 // These functions allow you to control a group of motors as one.
 
 	// Set all drive motors
+
+void ResetDriveEncoder()
+{
+
+}
 	void drive_forward()
 {
 	startMotor(rightfrontmotor, 127);
@@ -128,8 +133,97 @@ void stop_mobilegoal()
 {
 	stopMotor(mobilegoal);
 }
+void RedMobile()
+{
+	startMotor(rightarmbar, -127);
+startMotor(leftarmbar, 127);
+wait(1.8);
+stopMotor(rightarmbar);
+stopMotor(leftarmbar);
 
+startMotor(rightfrontmotor, 127);
+startMotor(rightbackmotor, 127);
+startMotor(leftfrontmotor, 127);
+startMotor(leftbackmotor, 127);
+wait(1.4);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
 
+startMotor(mobilegoal, -127);
+wait(1.7);
+stopMotor(mobilegoal);
+
+startMotor(rightfrontmotor, 127);
+startMotor(rightbackmotor, 127);
+startMotor(leftfrontmotor, 127);
+startMotor(leftbackmotor, 127);
+startMotor(mobilegoal, 127);
+wait(2);
+stopMotor(mobilegoal);
+
+startMotor(rightfrontmotor, -127);
+startMotor(rightbackmotor, -127);
+startMotor(leftfrontmotor, -127);
+startMotor(leftbackmotor, -127);
+wait(1);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
+
+startMotor(rightfrontmotor, -127);
+startMotor(rightbackmotor, -127);
+startMotor(leftfrontmotor, 127);
+startMotor(leftbackmotor, 127);
+wait(1.13);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
+
+startMotor(rightfrontmotor, 127);
+startMotor(rightbackmotor, 127);
+startMotor(leftfrontmotor, 127);
+startMotor(leftbackmotor, 127);
+wait(1.2);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
+
+/*startMotor(rightfrontmotor, -127);
+startMotor(rightbackmotor, -127);
+startMotor(leftfrontmotor, 127);
+startMotor(leftbackmotor, 127);
+wait(.4);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
+*/
+startMotor(mobilegoal, -127);
+wait(1.4);
+stopMotor(mobilegoal);
+wait(.6);
+
+startMotor(rightfrontmotor, -127);
+startMotor(rightbackmotor, -127);
+startMotor(leftfrontmotor, -127);
+startMotor(leftbackmotor, -127);
+wait(1.2);
+stopMotor(rightfrontmotor);
+stopMotor(rightbackmotor);
+stopMotor(leftfrontmotor);
+stopMotor(leftbackmotor);
+wait(.1);
+}
 void skillsAuton()
 {
 
@@ -174,6 +268,24 @@ lift_arm();
 	stop_drive();
 	wait(.1);
 }
+void checkbattery()
+{
+		bLCDBacklight = true;									// Turn on LCD Backlight
+	string mainBattery, backupBattery;
+
+		clearLCDLine(0);											// Clear line 1 (0) of the LCD
+		clearLCDLine(1);											// Clear line 2 (1) of the LCD
+
+		//Display the Primary Robot battery voltage
+		displayLCDString(0, 0, "Primary: ");
+		sprintf(mainBattery, "%1.2f%c", nImmediateBatteryLevel/1000.0,'V'); //Build the value to be displayed
+		displayNextLCDString(mainBattery);
+
+		//Display the Backup battery voltage
+		displayLCDString(1, 0, "Backup: ");
+		sprintf(backupBattery, "%1.2f%c", BackupBatteryLevel/1000.0, 'V');	//Build the value to be displayed
+		displayNextLCDString(backupBattery);
+	}
 
 void waitForPress()
 {
@@ -255,20 +367,25 @@ void pre_auton()
   }
 
     string name = "";
-    if(count==0){name="stationary Auton";}
-    if(count==1){name="Right Auton";}
+    if(count==0){name="Stationary Auton";}
+    if(count==1){name="Red Mobile";}
     if(count==2){name="Skills";}
   	displayLCDCenteredString(1, name);
   	displayLCDCenteredString(1, "<Cancel>");
   	delay(1000);
   	displayLCDCenteredString(0, "Robot Calibration");
   	displayLCDCenteredString(1, "<Running... 3s>");
+  	wait1Msec(1000);
 		// Clear Gyro and Encoders
+  	displayLCDCenteredString(1, "<Running... 2s>");
+  	ResetDriveEncoder();
+  	wait(1000);
+  	//Final preperations
  		displayLCDCenteredString(1, "<Running... 1s>");
  		wait1Msec(1000);
   	displayLCDCenteredString(0, "Ready For Match!");
   	displayLCDCenteredString(1, "<Press to Cancel>");
-  bStopTasksBetweenModes = true;
+  bStopTasksBetweenModes = true; // might have to swith to false ------------------------------------------------------------------------
 
 	// Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
 	// used by the competition include file, for example, you might want
@@ -300,9 +417,10 @@ task autonomous()
    	StationaryAuton();
     break;
   case 1: // Right Autonomous
-    displayLCDCenteredString(0, "Right Autonomous");
+    displayLCDCenteredString(0, "Red Mobile Auto");
     displayLCDCenteredString(1, "<Running>");
-    // Right Auton goes here
+    wait1Msec(1000);
+    RedMobile();
     break;
   case 2: // Skills Challenge
     displayLCDCenteredString(0, "Skills Challenge");
@@ -331,13 +449,13 @@ task usercontrol()
 
   while (true)
   {
-     motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
-    motor[leftbackmotor] = vexRT[Ch3];
-    motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
+     motor[leftfrontmotor]  = vexRT[Ch3];
+    motor[leftbackmotor] = vexRT[Ch3];    // drive forward
+    motor[rightfrontmotor] = vexRT[Ch2];
     motor[rightbackmotor] = vexRT[Ch2];
 
 
-    while (vexRT[Btn6U] == 1)
+    while (vexRT[Btn6UXmtr2] == 1)
     {
 	startMotor(leftarmbar, 127);
 	startMotor(rightarmbar, 127);
@@ -351,7 +469,7 @@ task usercontrol()
   stopMotor(rightarmbar);
    stopMotor(mobilegoal);
 
-       while (vexRT[Btn6D] == 1)
+       while (vexRT[Btn6DXmtr2] == 1)
     {
 	startMotor(leftarmbar, -127);
 	startMotor(rightarmbar, -127);
@@ -366,7 +484,7 @@ task usercontrol()
    stopMotor(mobilegoal);
 
 
-  while (vexRT[Btn5U] == 1)
+  while (vexRT[Btn5UXmtr2] == 1)
   {
 	startMotor(mobilegoal, 127);
 
@@ -380,7 +498,7 @@ task usercontrol()
   stopMotor(rightarmbar);
    stopMotor(mobilegoal);
 
-	  while (vexRT[Btn5D] == 1)
+	  while (vexRT[Btn5DXmtr2] == 1)
   {
 	startMotor(mobilegoal, -127);
 
@@ -394,7 +512,7 @@ task usercontrol()
   stopMotor(rightarmbar);
    stopMotor(mobilegoal);
 
-	  while (vexRT[Btn8U] == 1)
+	  while (vexRT[Btn8UXmtr2] == 1)
   {
 	startMotor(claw, 127);
 
@@ -406,7 +524,7 @@ task usercontrol()
 }
 stopMotor(claw);
 
-	  while (vexRT[Btn8D] == 1)
+	  while (vexRT[Btn8DXmtr2] == 1)
   {
 	startMotor(claw, -127);
 
@@ -417,5 +535,9 @@ stopMotor(claw);
     motor[rightbackmotor] = vexRT[Ch2];
 }
 stopMotor(claw);
+if (vexRT[Btn7U] == 1)
+{
+checkbattery();
+}
 }
 }
