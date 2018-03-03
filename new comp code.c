@@ -103,17 +103,32 @@ void stop_claw()
 
 void lift_arm()
 {
-
+	startMotor(fourbar, 100);
 }
 
 void drop_arm()
 {
-
+	startMotor(fourbar, -100);
 }
 
 void stop_arm()
 {
+	stopMotor(fourbar);
+}
 
+void chain_forward()
+{
+	startMotor(chainbar, 100);
+}
+
+void chain_back()
+{
+	startMotor(chainbar, -100);
+}
+
+void stop_chain()
+{
+	stopMotor(chainbar);
 }
 
 void mobilegoal_down()
@@ -132,7 +147,87 @@ void stop_mobilegoal()
 }
 void RedMobile()
 {
-
+	drive_forward();
+	chain_back();
+	wait1Msec(1500);
+	stop_drive();
+	stop_chain();
+	wait1Msec(100);
+	mobilegoal_down();
+	wait1Msec(1500);
+	stop_mobilegoal();
+	wait1Msec(100);
+	drive_forward();
+	wait1Msec(1000);
+	stop_drive();
+	wait1Msec(100);
+	mobilegoal_up();
+	chain_forward();
+	wait1Msec(1500);
+	stop_mobilegoal();
+	stop_chain();
+	wait1Msec(100);
+	drop_cone();
+	wait1Msec(500);
+	stop_claw();
+	wait1Msec(100);
+	drive_back();
+	chain_back();
+	wait1Msec(1000);
+	turn_right();
+	wait1Msec(1200);
+	stop_drive();
+	wait1Msec(100);
+	drive_forward();
+	wait1Msec(1000);
+	stop_drive();
+	wait1Msec(100);
+	mobilegoal_down();
+	wait1Msec(800);
+	drive_back();
+	wait1Msec(1000);
+}
+void BlueMobile()
+{
+	drive_forward();
+	chain_back();
+	wait1Msec(1500);
+	stop_drive();
+	stop_chain();
+	wait1Msec(100);
+	mobilegoal_down();
+	wait1Msec(1500);
+	stop_mobilegoal();
+	wait1Msec(100);
+	drive_forward();
+	wait1Msec(1000);
+	stop_drive();
+	wait1Msec(100);
+	mobilegoal_up();
+	chain_forward();
+	wait1Msec(1500);
+	stop_mobilegoal();
+	stop_chain();
+	wait1Msec(100);
+	drop_cone();
+	wait1Msec(500);
+	stop_claw();
+	wait1Msec(100);
+	drive_back();
+	chain_back();
+	wait1Msec(1000);
+	turn_left();
+	wait1Msec(1200);
+	stop_drive();
+	wait1Msec(100);
+	drive_forward();
+	wait1Msec(1000);
+	stop_drive();
+	wait1Msec(100);
+	mobilegoal_down();
+	wait1Msec(800);
+	drive_back();
+	wait1Msec(1000);
 }
 void skillsAuton()
 {
@@ -163,11 +258,11 @@ void checkbattery()
 }
 void Legends()
 {
-		bLCDBacklight = true;
-		clearLCDLine(0);
-clearLCDLine(1);
-displayLCDCenteredString(0, "Legends");
-displayLCDCenteredString(1, "Waiting...");
+	bLCDBacklight = true;
+	clearLCDLine(0);
+	clearLCDLine(1);
+	displayLCDCenteredString(0, "Legends");
+	displayLCDCenteredString(1, "Waiting...");
 }
 void waitForPress()
 {
@@ -210,7 +305,7 @@ void pre_auton()
 			break;
 		case 1:
 			//Display second choice
-			displayLCDCenteredString(0, "Right Auton");
+			displayLCDCenteredString(0, "Red Mobile");
 			displayLCDCenteredString(1, "<     Enter    >");
 			waitForPress();
 			//Increment or decrement "count" based on button press
@@ -225,7 +320,25 @@ void pre_auton()
 				count++;
 			}
 			break;
-		case 2:
+			case 2:
+			// display
+			displayLCDCenteredString(0, "Blue Mobile");
+			displayLCDCenteredString(1, "<    Enter    >");
+			waitForPress();
+			// increment
+			if(nLCDButtons == leftButton)
+			{
+				waitForRelease();
+				count--;
+			}
+			else if (nLCDButtons == rightButton)
+			{
+				waitForRelease();
+				count++;   // <----- might need to change to count = 0;
+			}
+			break;
+
+		case 3:
 			//Display third choice
 			displayLCDCenteredString(0, "Skills");
 			displayLCDCenteredString(1, "<     Enter    >");
@@ -242,7 +355,7 @@ void pre_auton()
 				count = 0;
 			}
 			break;
-					case 3:
+		case 4:
 			//Display third choice
 			displayLCDCenteredString(0, "Legends");
 			displayLCDCenteredString(1, "<     Enter    >");
@@ -268,8 +381,9 @@ void pre_auton()
 	string name = "";
 	if(count==0){name="Stationary Auton";}
 	if(count==1){name="Red Mobile";}
-	if(count==2){name="Skills";}
-	if(count==3){name="Legends";}
+	if(count==2){name="Blue Mobile";}
+	if(count==3){name="Skills";}
+	if(count==4){name="Legends";}
 	displayLCDCenteredString(1, name);
 	displayLCDCenteredString(1, "<Cancel>");
 	delay(1000);
@@ -322,12 +436,18 @@ task autonomous()
 		wait1Msec(1000);
 		RedMobile();
 		break;
-	case 2: // Skills Challenge
+	case 2: // Blue mobile
+		displayLCDCenteredString(0, "Blue Mobile Auto");
+		displayLCDCenteredString(1, "<Running>");
+		wait1Msec(1000);
+		BlueMobile();
+		break;
+	case 3: // Skills Challenge
 		displayLCDCenteredString(0, "Skills Challenge");
 		displayLCDCenteredString(1, "<Running>");
 		skillsAuton();
 		break;
-	case 3: // Legends
+	case 4: // Legends
 		displayLCDCenteredString(0, "Legends");
 		displayLCDCenteredString(1, "<Running>");
 		Legends();
@@ -357,60 +477,60 @@ task usercontrol()
 		motor[leftbackmotor] = vexRT[Ch3];
 		motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 		motor[rightbackmotor] = vexRT[Ch2];
-		motor[claw] = vexRT[Ch3Xmtr2];
+		motor[fourbar] = vexRT[Ch3Xmtr2];
 
 		if (vexRT[Btn6UXmtr2] == 1)   // lift the 4 bar lift
 		{
-			startMotor(fourbar, 127);
+			startMotor(chainbar, -70);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else   // stop 4 bar lift
 		{
-			stopMotor(fourbar);
+			stopMotor(chainbar);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 		if (vexRT[Btn6DXmtr2] == 1)   // bring down 4 bar
 		{
-			startMotor(fourbar, -127);
+			startMotor(claw, 127);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else   // stop 4 bar
 		{
-			stopMotor(fourbar);
+			stopMotor(claw);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 
 		if (vexRT[Btn5UXmtr2] == 1)   // bring forward chain bar
 		{
-			startMotor(chainbar, 127);
+			startMotor(chainbar, 70);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else   // stop chain bar
 		{
@@ -420,28 +540,28 @@ task usercontrol()
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 		if (vexRT[Btn5DXmtr2] == 1)   // bring chain bar back
 		{
-			startMotor(chainbar, -127);
+			startMotor(claw, -127);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else // stop chain bar
 		{
-			stopMotor(chainbar);
+			stopMotor(claw);
 
 			motor[leftfrontmotor]  = vexRT[Ch3];   // Left Joystick Y value
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 
@@ -453,7 +573,7 @@ task usercontrol()
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else   // stop mobile goal lift
 		{
@@ -463,7 +583,7 @@ task usercontrol()
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 		if (vexRT[Btn5D] == 1)
@@ -474,7 +594,7 @@ task usercontrol()
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 		else
 		{
@@ -484,7 +604,7 @@ task usercontrol()
 			motor[leftbackmotor] = vexRT[Ch3];
 			motor[rightfrontmotor] = vexRT[Ch2];   // Right Joystick Y value
 			motor[rightbackmotor] = vexRT[Ch2];
-			motor[claw] = vexRT[Ch3Xmtr2];
+			motor[fourbar] = vexRT[Ch3Xmtr2];
 		}
 
 		if (vexRT[Btn7U] == 1)
